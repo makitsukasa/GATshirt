@@ -8,28 +8,31 @@
 // スプライトをまとめて動かす
 // https://qiita.com/alkn203/items/dc799202c557f716c971
 
+// phina.jsでイベント
+// https://qiita.com/hansel_no_kioku/items/a4fd71fd5817c1327799
+
 // グローバルに展開
 phina.globalize();
 
 var ASSETS = {
-	image: {
-		tomapiyo: 'http://cdn.rawgit.com/phi-jp/phina.js/v0.2.0/assets/images/tomapiko_ss.png',
-		/*
-		ground:   'http://www.kitcc.org/~tsukasa/Tshirt/ground.png',
-		stripe:   'http://www.kitcc.org/~tsukasa/Tshirt/stripe.png',
-		border:   'http://www.kitcc.org/~tsukasa/Tshirt/border.png',
-		dot:      'http://www.kitcc.org/~tsukasa/Tshirt/dot.png',
-		thumbsup: 'http://www.kitcc.org/~tsukasa/Tshirt/thumbsup.png',
-		thumbsdown:'http://www.kitcc.org/~tsukasa/Tshirt/thumbsdown.png',
-		*/
-		ground:    'https://makitsukasa.github.io/image/GATshirt/ground.png',
-		stripe:    'https://makitsukasa.github.io/image/GATshirt/stripe.png',
-		border:    'https://makitsukasa.github.io/image/GATshirt/border.png',
-		dot:       'https://makitsukasa.github.io/image/GATshirt/dot.png',
-		thumbsup:  'https://makitsukasa.github.io/image/GATshirt/thumbsup.png',
-		thumbsdown:'https://makitsukasa.github.io/image/GATshirt/thumbsdown.png',
-	},
+  image: {
+    ground:    'https://makitsukasa.github.io/GATshirt/image/ground.png',
+    stripe:    'https://makitsukasa.github.io/GATshirt/image/stripe.png',
+    border:    'https://makitsukasa.github.io/GATshirt/image/border.png',
+    dot:       'https://makitsukasa.github.io/GATshirt/image/dot.png',
+    thumbsup:  'https://makitsukasa.github.io/GATshirt/image/thumbsup.png',
+    thumbsdown:'https://makitsukasa.github.io/GATshirt/image/thumbsdown.png',
+  },
 };
+
+// coodinate is defined at MainScene
+var SHIRT_HOME_X = 0;
+var SHIRT_HOME_Y = 0;
+var SHIRT_GOOD_X = 0;
+var SHIRT_BAD_X  = 0;
+
+var ANSWER_GOOD = "GOOD";
+var ANSWER_BAD  = "BAD" ;
 
 
 // 画像マスク用の関数を定義
@@ -68,15 +71,15 @@ function maskImage(imageKey, color, distKey) {
 phina.define("Shirt", {
   superClass: DisplayElement,
   
-  init: function(homeX, homeY, goodX, badX, scale){
+  init: function(scale){
     this.superInit();
     
     this.scaleX = scale;
     this.scaleY = scale;
-    this.homeX = homeX;
-    this.homeY = homeY;
-    this.goodX = goodX;
-    this.badX  = badX;
+    this.homeX = SHIRT_HOME_X;
+    this.homeY = SHIRT_HOME_Y;
+    this.goodX = SHIRT_GOOD_X;
+    this.badX  = SHIRT_BAD_X ;
     this.x = this.homeX;
     this.y = this.homeY;
     this.vx = 0;
@@ -119,7 +122,6 @@ phina.define("Shirt", {
       
     }
     
-    
     // set thumbs icon alpha
     // calc with shirt position bitween home and goal
     //  x h        g   :   0%
@@ -154,10 +156,10 @@ phina.define("Shirt", {
     
     if(app.pointer.getPointing() === false){
       if(this.thumbsup.alpha >= 1.0){
-        this.answer = true;
+        this.answer = ANSWER_GOOD;
       }
       else if(this.thumbsdown.alpha >= 1.0){
-        this.answer = false;
+        this.answer = ANSWER_BAD;
       }
     }
     
@@ -167,8 +169,8 @@ phina.define("Shirt", {
     this.shirt.alpha = 0.4;
     
     if(true/* tweener end */){
-      // event fire
-      //this.remove();
+      this.fire({type: 'chose', answer: this.answer});
+      this.remove();
     }
   },
   
@@ -189,13 +191,25 @@ phina.define("MainScene", {
 
     // 背景色
     this.backgroundColor = '#fff';
+
+    SHIRT_HOME_X = this.gridX.center();
+    SHIRT_HOME_Y = this.gridY.center();
+    SHIRT_GOOD_X = this.gridX.center(-7);
+    SHIRT_BAD_X  = this.gridX.center( 7);
     
-    this.shirt = Shirt(
-        this.gridX.center(), this.gridY.center(),
-        this.gridX.center(-7), this.gridX.center(7), 4
-    ).addChildTo(this);
+    this.shirt = Shirt(4).addChildTo(this);
+    this.shirt.on("chose", function(e){
+      if(e.answer === ANSWER_GOOD){
+        console.log("GOOOOOOOD!!!!!!!!!!!");
+      }
+      else{
+        console.log("BAAAAAAAD!!!!!!!!!!!");
+      }
+    });
     
   },
+  
+  
 
 });
 
