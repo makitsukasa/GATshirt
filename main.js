@@ -22,12 +22,12 @@ var ASSETS = {
 		thumbsup: 'http://www.kitcc.org/~tsukasa/Tshirt/thumbsup.png',
 		thumbsdown:'http://www.kitcc.org/~tsukasa/Tshirt/thumbsdown.png',
 		*/
-		ground:    'https://makitsukasa.github.io/GATshirt/ground.png',
-		stripe:    'https://makitsukasa.github.io/GATshirt/stripe.png',
-		border:    'https://makitsukasa.github.io/GATshirt/border.png',
-		dot:       'https://makitsukasa.github.io/GATshirt/dot.png',
-		thumbsup:  'https://makitsukasa.github.io/GATshirt/thumbsup.png',
-		thumbsdown:'https://makitsukasa.github.io/GATshirt/thumbsdown.png',
+		ground:    'https://makitsukasa.github.io/image/GATshirt/ground.png',
+		stripe:    'https://makitsukasa.github.io/image/GATshirt/stripe.png',
+		border:    'https://makitsukasa.github.io/image/GATshirt/border.png',
+		dot:       'https://makitsukasa.github.io/image/GATshirt/dot.png',
+		thumbsup:  'https://makitsukasa.github.io/image/GATshirt/thumbsup.png',
+		thumbsdown:'https://makitsukasa.github.io/image/GATshirt/thumbsdown.png',
 	},
 };
 
