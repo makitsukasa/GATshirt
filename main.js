@@ -26,6 +26,10 @@ var ASSETS = {
 	},
 };
 
+var TWEENER_TIME_SHIRT_APPEAR = 250;
+var TWEENER_TIME_SHIRT_DISAPPEAR = 250;
+var SHIRT_GOOD_GRID = 6;
+
 // coodinate is defined at MainScene
 var SHIRT_HOME_X = 0;
 var SHIRT_HOME_Y = 0;
@@ -120,14 +124,16 @@ phina.define("Shirt", {
 		
 		this.thumbsup.alpha = 0;
 		this.thumbsdown.alpha = 0;
+
+		this.alpha = 0;
+		this.tweener.to({
+			alpha: 1,
+		}, TWEENER_TIME_SHIRT_APPEAR).play();
 	},
 	
 	update: function(app){
 		if(this.answer === null){
 			this.updateChoosing(app)
-		}
-		else{
-			this.updateChoosed(this.answer);
 		}
 	},
 	
@@ -186,21 +192,32 @@ phina.define("Shirt", {
 		if(app.pointer.getPointing() === false){
 			if(this.thumbsup.alpha >= 1.0){
 				this.answer = ANSWER_GOOD;
+				this.chose(this.answer);
 			}
 			else if(this.thumbsdown.alpha >= 1.0){
 				this.answer = ANSWER_BAD;
+				this.chose(this.answer);
 			}
 		}
 		
 	},
 	
-	updateChoosed: function(isGood){
-		this.shirt.alpha = 0.4;
-		
-		if(true/* tweener end */){
-			this.parent.onChose(isGood);
-			this.init(this.scaleX, DEFAULT_GENE_2);
+	chose: function(answer){
+
+		var vanishX = this.goodX * 2 - this.homeX;
+		if(answer === ANSWER_BAD){
+			vanishX = this.badX  * 2 - this.homeX;
 		}
+
+		this.parent.onChose(answer);
+		this.tweener.to({
+			alpha: 0,
+			x: vanishX,
+		}, TWEENER_TIME_SHIRT_DISAPPEAR)
+		.call(function(){
+			this.remove();
+		}.bind(this))
+		.play();
 	},
 
 });
@@ -222,8 +239,8 @@ phina.define("MainScene", {
 
 		SHIRT_HOME_X = this.gridX.center();
 		SHIRT_HOME_Y = this.gridY.center();
-		SHIRT_GOOD_X = this.gridX.center(-7);
-		SHIRT_BAD_X  = this.gridX.center( 7);
+		SHIRT_GOOD_X = this.gridX.center(-SHIRT_GOOD_GRID);
+		SHIRT_BAD_X  = this.gridX.center( SHIRT_GOOD_GRID);
 		
 		this.shirt = Shirt(4).addChildTo(this);
 	},
@@ -235,6 +252,7 @@ phina.define("MainScene", {
 		else{
 			console.log("BAAAAAAAD!!!!!!!!!!!");
 		}
+		this.shirt = Shirt(4).addChildTo(this);
 	},
 
 });
