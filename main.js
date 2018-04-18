@@ -16,13 +16,13 @@ phina.globalize();
 
 var ASSETS = {
 	image: {
-		ground:    'https://makitsukasa.github.io/GATshirt/image/ground.png',
-		stripe:    'https://makitsukasa.github.io/GATshirt/image/stripe.png',
-		border:    'https://makitsukasa.github.io/GATshirt/image/border.png',
-		dot:       'https://makitsukasa.github.io/GATshirt/image/dot.png',
-		thumbsup:  'https://makitsukasa.github.io/GATshirt/image/thumbsup.png',
-		thumbsdown:'https://makitsukasa.github.io/GATshirt/image/thumbsdown.png',
-		none:      'http://www.kitcc.org/~tsukasa/Tshirt/none.png',
+		ground:     'https://makitsukasa.github.io/GATshirt/image/ground.png',
+		stripe:     'https://makitsukasa.github.io/GATshirt/image/stripe.png',
+		border:     'https://makitsukasa.github.io/GATshirt/image/border.png',
+		dot:        'https://makitsukasa.github.io/GATshirt/image/dot.png',
+		thumbsup:   'https://makitsukasa.github.io/GATshirt/image/thumbsup.png',
+		thumbsdown: 'https://makitsukasa.github.io/GATshirt/image/thumbsdown.png',
+		none:       'http://www.kitcc.org/~tsukasa/Tshirt/none.png',
 	},
 };
 
@@ -67,7 +67,7 @@ function maskImage(imageKey, color, distKey) {
 	// 画像生成用にダミーのシーン生成
 	var dummy = DisplayScene({
 		// 元画像と同じサイズにする
-		width: original.width,
+		width:  original.width,
 		height: original.height,
 		// 背景色を変更したい色にする
 		backgroundColor: color,
@@ -101,21 +101,21 @@ phina.define("Shirt", {
 		
 		this.scaleX = scale;
 		this.scaleY = scale;
-		this.homeX = SHIRT_HOME_X;
-		this.homeY = SHIRT_HOME_Y;
-		this.goodX = SHIRT_GOOD_X;
-		this.badX  = SHIRT_BAD_X ;
-		this.x = this.homeX;
-		this.y = this.homeY;
-		this.vx = 0;
-		this.vy = 0;
+		this.homeX  = SHIRT_HOME_X;
+		this.homeY  = SHIRT_HOME_Y;
+		this.goodX  = SHIRT_GOOD_X;
+		this.badX   = SHIRT_BAD_X ;
+		this.x      = this.homeX;
+		this.y      = this.homeY;
+		this.vx     = 0;
+		this.vy     = 0;
 		this.answer = null;
 		
-		this.shirt = DisplayElement().addChildTo(this);
+		this.shirt   = DisplayElement().addChildTo(this);
 		this.ground  = Sprite(maskImage('ground'    , gene.groundColor )).addChildTo(this.shirt);
 		this.pattern = Sprite(maskImage(gene.pattern, gene.patternColor)).addChildTo(this.shirt);
 		this.logo    = Sprite(gene.logo                                 ).addChildTo(this.shirt);
-		this.thumbsup = Sprite('thumbsup').addChildTo(this);
+		this.thumbsup   = Sprite('thumbsup').addChildTo(this);
 		this.thumbsdown = Sprite('thumbsdown').addChildTo(this);
 		
 		this.thumbsup.alpha = 0;
@@ -202,8 +202,7 @@ phina.define("Shirt", {
 			this.init(this.scaleX, DEFAULT_GENE_2);
 		}
 	},
-	
-	
+
 });
 
 /*
