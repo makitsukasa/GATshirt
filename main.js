@@ -22,7 +22,7 @@ var ASSETS = {
 		dot:        'https://makitsukasa.github.io/GATshirt/image/dot.png',
 		thumbsup:   'https://makitsukasa.github.io/GATshirt/image/thumbsup.png',
 		thumbsdown: 'https://makitsukasa.github.io/GATshirt/image/thumbsdown.png',
-		none:       'http://www.kitcc.org/~tsukasa/Tshirt/none.png',
+		none:       'https://makitsukasa.github.io/GATshirt/image/none.png',
 	},
 };
 
