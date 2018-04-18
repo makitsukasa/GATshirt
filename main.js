@@ -1,10 +1,10 @@
-
+﻿
 // タッチ操作
 // http://github.dev7.jp/b/2015/10/14/smartphone-stg/
 
 // 画像をマスクして色を変える
 // https://qiita.com/simiraaaa/items/2a1cc7b0f92718d6eed6
-
+	
 // スプライトをまとめて動かす
 // https://qiita.com/alkn203/items/dc799202c557f716c971
 
