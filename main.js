@@ -20,6 +20,7 @@ var ASSETS = {
 		stripe:     'https://makitsukasa.github.io/GATshirt/image/stripe.png',
 		border:     'https://makitsukasa.github.io/GATshirt/image/border.png',
 		dot:        'https://makitsukasa.github.io/GATshirt/image/dot.png',
+		frame:      'https://makitsukasa.github.io/GATshirt/image/frame.png',
 		thumbsup:   'https://makitsukasa.github.io/GATshirt/image/thumbsup.png',
 		thumbsdown: 'https://makitsukasa.github.io/GATshirt/image/thumbsdown.png',
 		none:       'https://makitsukasa.github.io/GATshirt/image/none.png',
@@ -119,6 +120,7 @@ phina.define("Shirt", {
 		this.ground  = Sprite(maskImage('ground'    , gene.groundColor )).addChildTo(this.shirt);
 		this.pattern = Sprite(maskImage(gene.pattern, gene.patternColor)).addChildTo(this.shirt);
 		this.logo    = Sprite(gene.logo                                 ).addChildTo(this.shirt);
+		this.frame   = Sprite('frame'                                   ).addChildTo(this.shirt);
 		this.thumbsup   = Sprite('thumbsup').addChildTo(this);
 		this.thumbsdown = Sprite('thumbsdown').addChildTo(this);
 		
