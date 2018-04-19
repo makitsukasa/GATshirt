@@ -27,6 +27,7 @@ var ASSETS = {
 	},
 };
 
+// constants for interface
 var TWEENER_TIME_SHIRT_APPEAR = 250;
 var TWEENER_TIME_SHIRT_DISAPPEAR = 250;
 var SHIRT_GOOD_GRID = 6;
@@ -101,7 +102,7 @@ function maskImage(imageKey, color, distKey) {
 phina.define("Shirt", {
 	superClass: DisplayElement,
 	
-	init: function(scale, gene = DEFAULT_GENE){
+	init: function(scale, gene = {}){
 		this.superInit();
 		
 		this.scaleX = scale;
@@ -117,11 +118,16 @@ phina.define("Shirt", {
 		this.answer = null;
 		
 		this.shirt   = DisplayElement().addChildTo(this);
+		this.gene    = gene;
+		if(Object.keys(gene).length === 0){
+		  this.randomize();
+		  gene = this.gene;
+		}
 		this.ground  = Sprite(maskImage('ground'    , gene.groundColor )).addChildTo(this.shirt);
 		this.pattern = Sprite(maskImage(gene.pattern, gene.patternColor)).addChildTo(this.shirt);
 		this.logo    = Sprite(gene.logo                                 ).addChildTo(this.shirt);
 		this.frame   = Sprite('frame'                                   ).addChildTo(this.shirt);
-		this.thumbsup   = Sprite('thumbsup').addChildTo(this);
+		this.thumbsup   = Sprite('thumbsup'  ).addChildTo(this);
 		this.thumbsdown = Sprite('thumbsdown').addChildTo(this);
 		
 		this.thumbsup.alpha = 0;
@@ -133,9 +139,18 @@ phina.define("Shirt", {
 		}, TWEENER_TIME_SHIRT_APPEAR).play();
 	},
 	
+	randomize: function(){
+	  this.gene = {
+	    groundColor:  COLOR_TABLE  [Math.floor(Math.random() * COLOR_TABLE  .length)],
+	    patternColor: COLOR_TABLE  [Math.floor(Math.random() * COLOR_TABLE  .length)],
+	    pattern:      PATTERN_TABLE[Math.floor(Math.random() * PATTERN_TABLE.length)],
+	    logo:         LOGO_TABLE   [Math.floor(Math.random() * LOGO_TABLE   .length)],
+	  };
+	},
+	
 	update: function(app){
 		if(this.answer === null){
-			this.updateChoosing(app)
+			this.updateChoosing(app);
 		}
 	},
 	
@@ -244,7 +259,7 @@ phina.define("MainScene", {
 		SHIRT_GOOD_X = this.gridX.center(-SHIRT_GOOD_GRID);
 		SHIRT_BAD_X  = this.gridX.center( SHIRT_GOOD_GRID);
 		
-		this.shirt = Shirt(4).addChildTo(this);
+		this.shirt = Shirt(4, {}).addChildTo(this);
 	},
 	
 	onChose: function(answer){
