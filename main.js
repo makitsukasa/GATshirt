@@ -41,33 +41,32 @@ var SHIRT_BAD_X  = 0;
 var ANSWER_GOOD = "GOOD";
 var ANSWER_BAD  = "BAD" ;
 
-var COLOR_TABLE = [
-	"aqua", "black", "blue", "fuchsia", "gray", "green", "lime", "maroon",
-	"navy", "olive", "purple", "red", "silver", "teal", "white", "yellow",
-];
 var PATTERN_TABLE = [
-	"none", "stripe", "border", "dot",
-];
-var LOGO_TABLE = [
-	"none",
+	"stripe", "border", "dot",
 ];
 
 var DEFAULT_GENE = {
-	groundColor : "orange",
-	patternColor: "red",
-	pattern     : "dot",
-	logo        : "none",
+	groundColorH : 0,
+	groundColorS : 0,
+	groundColorL : 0,
+	patternColorH: 0,
+	patternColorS: 0,
+	patternColorL: 0,
+	pattern      : 0,
 };
 var DEFAULT_GENE_2 = {
-	groundColor : "red",
-	patternColor: "red",
-	pattern     : "none",
-	logo        : "none",
+	groundColorH : 0,
+	groundColorS : 0,
+	groundColorL : 0,
+	patternColorH: 0,
+	patternColorS: 0,
+	patternColorL: 0,
+	pattern      : 0,
 };
 
 
 // 画像マスク用の関数を定義
-function maskImage(imageKey, color, distKey) {
+function maskImage(imageKey, color, alpha, distKey) {
 	var original = AssetManager.get('image', imageKey).domElement;
 
 	// 画像生成用にダミーのシーン生成
@@ -77,10 +76,12 @@ function maskImage(imageKey, color, distKey) {
 		height: original.height,
 		// 背景色を変更したい色にする
 		backgroundColor: color,
+		a: 0.5,
 	});
 
 	var originalSprite = Sprite(imageKey).addChildTo(dummy);
 
+	originalSprite.alpha = alpha;
 	// 描画の位置を変更
 	originalSprite.setOrigin(0, 0);
 	// 描画方法をマスクするように変更
@@ -101,9 +102,10 @@ function maskImage(imageKey, color, distKey) {
 phina.define("Shirt", {
 	superClass: DisplayElement,
 
-	init: function(scale, gene = {}){
+	init: function(gene = {}){
 		this.superInit();
 
+		var scale  = 4;
 		this.scaleX = scale;
 		this.scaleY = scale;
 		this.homeX  = SHIRT_HOME_X;
@@ -122,14 +124,36 @@ phina.define("Shirt", {
 			this.randomize();
 			gene = this.gene;
 		}
-		this.ground  = Sprite(maskImage('ground'    , gene.groundColor )).addChildTo(this.shirt);
-		this.pattern = Sprite(maskImage(gene.pattern, gene.patternColor)).addChildTo(this.shirt);
-		this.logo    = Sprite(gene.logo                                 ).addChildTo(this.shirt);
-		this.frame   = Sprite('frame'                                   ).addChildTo(this.shirt);
+
+		var groundColor  = "hsl(" + Math.floor(gene.groundColorH  * 360) + "," +
+				gene.groundColorS * 100  + "%," + gene.groundColorL * 100  + "%)";
+		var patternColor = "hsl(" + Math.floor(gene.patternColorH * 360) + "," +
+				gene.patternColorS * 100 + "%," + gene.patternColorL * 100 + "%)";
+
+		var pattern = PATTERN_TABLE[Math.floor(gene.pattern * 3)];
+		/*
+		var pattern;
+		if(gene.pattern < 1.0 / 3)      pattern = PATTERN_TABLE[0];
+		else if(gene.pattern < 2.0 / 3) pattern = PATTERN_TABLE[1];
+		else                            pattern = PATTERN_TABLE[2];
+		*/
+		var patternAlpha;
+		if(gene.pattern < 1.0 / 6)      patternAlpha = gene.pattern * 6;
+		else if(gene.pattern < 2.0 / 6) patternAlpha = 2 - gene.pattern * 6;
+		else if(gene.pattern < 3.0 / 6) patternAlpha = gene.pattern * 6 - 2;
+		else if(gene.pattern < 4.0 / 6) patternAlpha = 4 - gene.pattern * 6;
+		else if(gene.pattern < 5.0 / 6) patternAlpha = gene.pattern * 6 - 4;
+		else                            patternAlpha = 6 - gene.pattern * 6;
+
+		this.ground     = Sprite(maskImage('ground', groundColor )).addChildTo(this.shirt);
+		this.pattern    = Sprite(
+			maskImage(pattern,  patternColor, patternAlpha       )).addChildTo(this.shirt);
+		//this.logo     = Sprite(gene.logo                          ).addChildTo(this.shirt);
+		this.frame      = Sprite('frame'                          ).addChildTo(this.shirt);
 		this.thumbsup   = Sprite('thumbsup'  ).addChildTo(this);
 		this.thumbsdown = Sprite('thumbsdown').addChildTo(this);
 
-		this.thumbsup.alpha = 0;
+		this.thumbsup  .alpha = 0;
 		this.thumbsdown.alpha = 0;
 
 		this.alpha = 0;
@@ -140,10 +164,13 @@ phina.define("Shirt", {
 
 	randomize: function(){
 	  this.gene = {
-	    groundColor:  COLOR_TABLE  [Math.floor(Math.random() * COLOR_TABLE  .length)],
-	    patternColor: COLOR_TABLE  [Math.floor(Math.random() * COLOR_TABLE  .length)],
-	    pattern:      PATTERN_TABLE[Math.floor(Math.random() * PATTERN_TABLE.length)],
-	    logo:         LOGO_TABLE   [Math.floor(Math.random() * LOGO_TABLE   .length)],
+			groundColorH : Math.random(),
+			groundColorS : Math.random(),
+			groundColorL : Math.random(),
+			patternColorH: Math.random(),
+			patternColorS: Math.random(),
+			patternColorL: Math.random(),
+			pattern      : Math.random(),
 	  };
 	},
 
@@ -258,7 +285,7 @@ phina.define("MainScene", {
 		SHIRT_GOOD_X = this.gridX.center(-SHIRT_GOOD_GRID);
 		SHIRT_BAD_X  = this.gridX.center( SHIRT_GOOD_GRID);
 
-		this.shirt = Shirt(4, {}).addChildTo(this);
+		this.shirt = Shirt().addChildTo(this);
 	},
 
 	onChose: function(answer){
@@ -268,7 +295,7 @@ phina.define("MainScene", {
 		else{
 			console.log("BAAAAAAAD!!!!!!!!!!!");
 		}
-		this.shirt = Shirt(4).addChildTo(this);
+		this.shirt = Shirt().addChildTo(this);
 	},
 
 });
