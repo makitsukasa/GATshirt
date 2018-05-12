@@ -4,7 +4,7 @@
 
 // 画像をマスクして色を変える
 // https://qiita.com/simiraaaa/items/2a1cc7b0f92718d6eed6
-	
+
 // スプライトをまとめて動かす
 // https://qiita.com/alkn203/items/dc799202c557f716c971
 
@@ -30,7 +30,7 @@ var ASSETS = {
 // constants for interface
 var TWEENER_TIME_SHIRT_APPEAR = 250;
 var TWEENER_TIME_SHIRT_DISAPPEAR = 250;
-var SHIRT_GOOD_GRID = 6;
+var SHIRT_GOOD_GRID = 5;
 
 // coodinate is defined at MainScene
 var SHIRT_HOME_X = 0;
@@ -55,7 +55,7 @@ var LOGO_TABLE = [
 var DEFAULT_GENE = {
 	groundColor : "orange",
 	patternColor: "red",
-	pattern     : "none",
+	pattern     : "dot",
 	logo        : "none",
 };
 var DEFAULT_GENE_2 = {
@@ -69,7 +69,7 @@ var DEFAULT_GENE_2 = {
 // 画像マスク用の関数を定義
 function maskImage(imageKey, color, distKey) {
 	var original = AssetManager.get('image', imageKey).domElement;
-	
+
 	// 画像生成用にダミーのシーン生成
 	var dummy = DisplayScene({
 		// 元画像と同じサイズにする
@@ -78,18 +78,17 @@ function maskImage(imageKey, color, distKey) {
 		// 背景色を変更したい色にする
 		backgroundColor: color,
 	});
-	
-	
+
 	var originalSprite = Sprite(imageKey).addChildTo(dummy);
-	
+
 	// 描画の位置を変更
 	originalSprite.setOrigin(0, 0);
 	// 描画方法をマスクするように変更
 	originalSprite.blendMode = 'destination-in';
-	
+
 	// シーンの内容を描画
 	dummy._render();
-	
+
 	// シーンの描画内容から テクスチャを作成
 	var texture = Texture();
 	texture.domElement = dummy.canvas.domElement;
@@ -101,10 +100,10 @@ function maskImage(imageKey, color, distKey) {
 
 phina.define("Shirt", {
 	superClass: DisplayElement,
-	
+
 	init: function(scale, gene = {}){
 		this.superInit();
-		
+
 		this.scaleX = scale;
 		this.scaleY = scale;
 		this.homeX  = SHIRT_HOME_X;
@@ -116,12 +115,12 @@ phina.define("Shirt", {
 		this.vx     = 0;
 		this.vy     = 0;
 		this.answer = null;
-		
+
 		this.shirt   = DisplayElement().addChildTo(this);
 		this.gene    = gene;
 		if(Object.keys(gene).length === 0){
-		  this.randomize();
-		  gene = this.gene;
+			this.randomize();
+			gene = this.gene;
 		}
 		this.ground  = Sprite(maskImage('ground'    , gene.groundColor )).addChildTo(this.shirt);
 		this.pattern = Sprite(maskImage(gene.pattern, gene.patternColor)).addChildTo(this.shirt);
@@ -129,7 +128,7 @@ phina.define("Shirt", {
 		this.frame   = Sprite('frame'                                   ).addChildTo(this.shirt);
 		this.thumbsup   = Sprite('thumbsup'  ).addChildTo(this);
 		this.thumbsdown = Sprite('thumbsdown').addChildTo(this);
-		
+
 		this.thumbsup.alpha = 0;
 		this.thumbsdown.alpha = 0;
 
@@ -138,7 +137,7 @@ phina.define("Shirt", {
 			alpha: 1,
 		}, TWEENER_TIME_SHIRT_APPEAR).play();
 	},
-	
+
 	randomize: function(){
 	  this.gene = {
 	    groundColor:  COLOR_TABLE  [Math.floor(Math.random() * COLOR_TABLE  .length)],
@@ -147,13 +146,13 @@ phina.define("Shirt", {
 	    logo:         LOGO_TABLE   [Math.floor(Math.random() * LOGO_TABLE   .length)],
 	  };
 	},
-	
+
 	update: function(app){
 		if(this.answer === null){
 			this.updateChoosing(app);
 		}
 	},
-	
+
 	updateChoosing: function(app){
 		if(app.pointer.getPointing()){
 			//this.position.add(app.pointer.deltaPosition);
@@ -168,22 +167,22 @@ phina.define("Shirt", {
 			this.vx += this.gx;
 			this.vx *= 0.5;
 			this.x  += this.vx;
-			
+
 		}
-		
+
 		// set thumbs icon alpha
 		// calc with shirt position bitween home and goal
 		//  x h        g   :   0%
 		//    h  x     g   :  20%
 		//    h     x  g   :  80%
 		//    h        g x : 100%
-		
+
 		let distHomeShirt  = Math.abs(this.homeX - this.x    );
 		let distHomeGGoal  = Math.abs(this.homeX - this.goodX);
 		let distGGoalShirt = Math.abs(this.goodX - this.x    );
 		let distHomeBGoal  = Math.abs(this.homeX - this.badX );
 		let distBGoalShirt = Math.abs(this.badX  - this.x    );
-		
+
 		if     (distGGoalShirt > distHomeGGoal && distHomeShirt  < distGGoalShirt){
 			this.thumbsup.alpha = 0.0;
 		}
@@ -202,10 +201,10 @@ phina.define("Shirt", {
 		else{
 			this.thumbsdown.alpha = distHomeShirt / distHomeBGoal;
 		}
-		
+
 		var thumbsAlpha = Math.max(this.thumbsup.alpha, this.thumbsdown.alpha);
 		this.shirt.alpha = 1 - thumbsAlpha * 0.5;
-		
+
 		if(app.pointer.getPointing() === false){
 			if(this.thumbsup.alpha >= 1.0){
 				this.answer = ANSWER_GOOD;
@@ -216,9 +215,9 @@ phina.define("Shirt", {
 				this.chose(this.answer);
 			}
 		}
-		
+
 	},
-	
+
 	chose: function(answer){
 
 		var vanishX = this.goodX * 2 - this.homeX;
@@ -258,10 +257,10 @@ phina.define("MainScene", {
 		SHIRT_HOME_Y = this.gridY.center();
 		SHIRT_GOOD_X = this.gridX.center(-SHIRT_GOOD_GRID);
 		SHIRT_BAD_X  = this.gridX.center( SHIRT_GOOD_GRID);
-		
+
 		this.shirt = Shirt(4, {}).addChildTo(this);
 	},
-	
+
 	onChose: function(answer){
 		if(answer === ANSWER_GOOD){
 			console.log("GOOOOOOOD!!!!!!!!!!!");
